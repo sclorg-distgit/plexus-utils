@@ -2,42 +2,9 @@
 %{?scl:%scl_package %{pkg_name}}
 %{?maven_find_provides_and_requires}
 
-# Copyright (c) 2000-2007, JPackage Project
-# All rights reserved.
-#
-# Redistribution and use in source and binary forms, with or without
-# modification, are permitted provided that the following conditions
-# are met:
-#
-# 1. Redistributions of source code must retain the above copyright
-#    notice, this list of conditions and the following disclaimer.
-# 2. Redistributions in binary form must reproduce the above copyright
-#    notice, this list of conditions and the following disclaimer in the
-#    documentation and/or other materials provided with the
-#    distribution.
-# 3. Neither the name of the JPackage Project nor the names of its
-#    contributors may be used to endorse or promote products derived
-#    from this software without specific prior written permission.
-#
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-# A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-# OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-# SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-# LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-# DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-# THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-#
-
-%global parent plexus
-%global subname utils
-
 Name:           %{?scl_prefix}%{pkg_name}
-Version:        3.0.9
-Release:        9.11%{?dist}
+Version:        3.0.22
+Release:        2.1%{?dist}
 Summary:        Plexus Common Utilities
 # ASL 1.1: several files in src/main/java/org/codehaus/plexus/util/ 
 # xpp: src/main/java/org/codehaus/plexus/util/xml/pull directory
@@ -48,26 +15,13 @@ Summary:        Plexus Common Utilities
 # Public domain: src/main/java/org/codehaus/plexus/util/TypeFormat.java
 # rest is ASL 2.0
 License:        ASL 1.1 and ASL 2.0 and xpp and BSD and Public Domain
-URL:            http://plexus.codehaus.org/
-Source0:        https://github.com/sonatype/%{pkg_name}/archive/%{pkg_name}-%{version}.tar.gz
+URL:            https://github.com/codehaus-plexus/plexus-utils
+BuildArch:      noarch
+
+Source0:        https://github.com/codehaus-plexus/%{pkg_name}/archive/%{pkg_name}-%{version}.tar.gz
 Source1:        http://apache.org/licenses/LICENSE-2.0.txt
 
-# Backported from upstream commit b38a1b3
-# Fixes upstream bug PLXUTILS-161, aka rhbz#958733
-Patch0:         %{pkg_name}-PLXUTILS-161.patch
-
-BuildArch:      noarch
-BuildRequires:  %{?scl_prefix_java_common}javapackages-tools
-
 BuildRequires:  %{?scl_prefix_java_common}maven-local
-BuildRequires:  %{?scl_prefix}maven-compiler-plugin
-BuildRequires:  %{?scl_prefix}maven-install-plugin
-BuildRequires:  %{?scl_prefix}maven-jar-plugin
-BuildRequires:  %{?scl_prefix}maven-javadoc-plugin
-BuildRequires:  %{?scl_prefix}maven-resources-plugin
-BuildRequires:  %{?scl_prefix}maven-surefire-plugin
-BuildRequires:  %{?scl_prefix}maven-doxia-sitetools
-BuildRequires:  %{?scl_prefix}maven-surefire-provider-junit
 BuildRequires:  %{?scl_prefix}mvn(org.apache.maven.plugins:maven-enforcer-plugin)
 
 %description
@@ -88,17 +42,32 @@ Javadoc for %{pkg_name}.
 %setup -q -n %{pkg_name}-%{pkg_name}-%{version}
 %{?scl:scl enable %{scl} - <<"EOF"}
 set -e -x
-%patch0 -p1
+
 cp %{SOURCE1} .
 
-%mvn_file : %{parent}/%{subname}
-%mvn_alias : "plexus:plexus-utils"
+%mvn_file : plexus/utils
+%mvn_alias : plexus:plexus-utils
+
+# Generate OSGI info
+%pom_xpath_inject "pom:project" "<packaging>bundle</packaging>"
+%pom_xpath_inject "pom:build/pom:plugins" "
+        <plugin>
+          <groupId>org.apache.felix</groupId>
+          <artifactId>maven-bundle-plugin</artifactId>
+          <extensions>true</extensions>
+          <configuration>
+            <instructions>
+              <_nouses>true</_nouses>
+              <Export-Package>org.codehaus.plexus.util.*;org.codehaus.plexus.util.cli.*;org.codehaus.plexus.util.cli.shell.*;org.codehaus.plexus.util.dag.*;org.codehaus.plexus.util.introspection.*;org.codehaus.plexus.util.io.*;org.codehaus.plexus.util.reflection.*;org.codehaus.plexus.util.xml.*;org.codehaus.plexus.util.xml.pull.*</Export-Package>
+            </instructions>
+          </configuration>
+        </plugin>"
 %{?scl:EOF}
 
 %build
 %{?scl:scl enable %{scl} - <<"EOF"}
 set -e -x
-%mvn_build
+%mvn_build -f
 %{?scl:EOF}
 
 %install
@@ -116,6 +85,15 @@ set -e -x
 %doc NOTICE.txt LICENSE-2.0.txt
 
 %changelog
+* Tue Jan 12 2016 Michal Srb <msrb@redhat.com> - 3.0.22-2.1
+- Prepare spec for SCL build
+
+* Tue Jan 12 2016 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 3.0.22-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_23_Mass_Rebuild
+
+* Tue Jan 12 2016 Michael Simacek <msimacek@redhat.com> - 3.0.22-1
+- Update to upstream version 3.0.22
+
 * Mon Jan 11 2016 Michal Srb <msrb@redhat.com> - 3.0.9-9.11
 - maven33 rebuild #2
 
