@@ -4,7 +4,7 @@
 
 Name:           %{?scl_prefix}%{pkg_name}
 Version:        3.0.22
-Release:        2.1%{?dist}
+Release:        2.2%{?dist}
 Summary:        Plexus Common Utilities
 # ASL 1.1: several files in src/main/java/org/codehaus/plexus/util/ 
 # xpp: src/main/java/org/codehaus/plexus/util/xml/pull directory
@@ -21,7 +21,7 @@ BuildArch:      noarch
 Source0:        https://github.com/codehaus-plexus/%{pkg_name}/archive/%{pkg_name}-%{version}.tar.gz
 Source1:        http://apache.org/licenses/LICENSE-2.0.txt
 
-BuildRequires:  %{?scl_prefix_java_common}maven-local
+BuildRequires:  %{?scl_prefix}maven-local
 BuildRequires:  %{?scl_prefix}mvn(org.apache.maven.plugins:maven-enforcer-plugin)
 
 %description
@@ -85,6 +85,9 @@ set -e -x
 %doc NOTICE.txt LICENSE-2.0.txt
 
 %changelog
+* Mon Feb 08 2016 Michal Srb <msrb@redhat.com> - 3.0.22-2.2
+- Fix BR on maven-local & co.
+
 * Tue Jan 12 2016 Michal Srb <msrb@redhat.com> - 3.0.22-2.1
 - Prepare spec for SCL build
 
