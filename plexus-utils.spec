@@ -3,7 +3,7 @@
 
 Name:           %{?scl_prefix}plexus-utils
 Version:        3.0.24
-Release:        3.1%{?dist}
+Release:        3.2%{?dist}
 Summary:        Plexus Common Utilities
 # ASL 1.1: several files in src/main/java/org/codehaus/plexus/util/ 
 # xpp: src/main/java/org/codehaus/plexus/util/xml/pull directory
@@ -75,6 +75,9 @@ cp %{SOURCE1} .
 %doc NOTICE.txt LICENSE-2.0.txt
 
 %changelog
+* Thu Jun 22 2017 Michael Simacek <msimacek@redhat.com> - 3.0.24-3.2
+- Mass rebuild 2017-06-22
+
 * Wed Jun 21 2017 Java Maintainers <java-maint@redhat.com> - 3.0.24-3.1
 - Automated package import and SCL-ization
 
